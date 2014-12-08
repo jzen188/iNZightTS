@@ -111,7 +111,7 @@ function(width, height, ...) {
             # type = "nbcairo" has no buffering. 
             # type = "cairo" has some buffering, and supports dev.hold and dev.flush. 
             # type = "dbcairo" buffers output and updates the screen about every 100ms (by default). 
-            dev.new(width = width, height = height, type = "dbcairo", ...)
+            dev.new(width = width, height = height, type = "cairo", ...)
         else
             dev.new(width = width, height = height, ...)
     }
