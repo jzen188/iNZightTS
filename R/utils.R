@@ -107,7 +107,11 @@ function(width, height, ...) {
         Acinonyx::idev(width = width.in, height = height.in)
     } else {
         if (.Platform$OS.type != "windows" && Sys.info()["sysname"] != "Darwin")
-            dev.new(width = width, height = height, type = "nbcairo", ...)
+            # There are three variants of the cairo-based device:
+            # type = "nbcairo" has no buffering. 
+            # type = "cairo" has some buffering, and supports dev.hold and dev.flush. 
+            # type = "dbcairo" buffers output and updates the screen about every 100ms (by default). 
+            dev.new(width = width, height = height, type = "dbcairo", ...)
         else
             dev.new(width = width, height = height, ...)
     }
