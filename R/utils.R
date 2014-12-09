@@ -34,7 +34,7 @@ get.x2 <-
       start.x = s[1] + (s[2] - 1) * step.x
       end.x = start.x + step.x * (length(tsObj) - 1)
     }
-    
+
     x = seq(start.x, end.x, by = step.x)
     x = order(x)
     x = x/max(x)
@@ -93,7 +93,7 @@ function(width, height, ...) {
     if ("package:shiny" %in% search()){
       # we should let shiny to set their default graphics device
       # setting any width and height here force shiny popup a new window to you
-      
+
       return()
     }
     # The windows device works fine (for now), only attempt to speed up
@@ -107,31 +107,22 @@ function(width, height, ...) {
         Acinonyx::idev(width = width.in, height = height.in)
     }
     else {
-        # i.e. if "Linux"
-        if (.Platform$OS.type != "windows" && Sys.info()["sysname"] != "Darwin") 
+        # i.e. if NOT "Windows"
+        if (.Platform$OS.type != "windows")
             # There are three variants of the cairo-based device:
             #
-            # type = "nbcairo" has no buffering. 
-            # type = "cairo" has some buffering, and supports dev.hold and dev.flush. 
-            # type = "dbcairo" buffers output and updates the screen about every 100ms (by default). 
+            # type = "nbcairo" has no buffering.
+            # type = "cairo" has some buffering, and supports dev.hold and dev.flush.
+            # type = "dbcairo" buffers output and updates the screen about every 100ms (by default).
             # options(X11updates = .1)
             #
             # Could explore the option of using cross-platform "Cairo" device...
-            # Cairo(width = width, height = height, ...)
-            #
+            Cairo(width = width, height = height, ...)
+
             # We use a buffered device as otherwise repainting when the window is exposed
             # will be slow. See ?X11()
-            X11(width = width, height = height, type = "cairo", ...)
+            # X11(width = width, height = height, type = "cairo", ...)
 
-        # i.e. if "Mac OS X"
-        else if (.Platform$OS.type != "windows" && Sys.info()["sysname"] == "Darwin")
-            # With Mac OS X, the backing store is in use on the X server, so we use a
-            # the "non-buffered" "nbcairo" device. ?X11()
-            X11(width = width, height = height, type = "nbcairo", ...)
-        # i.e. if "Windows":
-        # The windows graphics device supports "double buffering" so we just need to call
-        # the default windows device.
-        
         else
             dev.new(width = width, height = height, ...)
     }
@@ -155,7 +146,7 @@ drawImage <-
 ###  included in R by default. For non-windows graphics devices
 ###  that may or may not come with "double buffering", holding
 ###  and flushing an image for every iteration allows us to overcome
-###  the problem of "flickering". This has been tested on Linux Trusty.
+###  the problem of "flickering".
 
 pauseImage <-
 function(image, pause = 1) {
@@ -179,3 +170,4 @@ function(image, grobs) {
   }
   image
 }
+
