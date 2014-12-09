@@ -114,17 +114,16 @@ rawplot <-
 
         # Drawing initial points
         p <- pointsGrob(x = final.line$x, y = final.line$y,
-                        vp = vpPath("parent", "plot"), size = unit(2, "mm"),
+                        vp = vpPath("parent", "plot"), size = unit(1.2, "mm"),
                         pch = 19, name = "points", gp = gpar(col = "black"))
         image <- addGrob(image, p)
         pauseImage(image, 200)
-
         for (i in 1:n.points) {
             if ((get("stopAnimation", envir = e) && i < n.points))
                 next
             l <- linesGrob(x = final.line$x[1:i], y = final.line$y[1:i],
                            vp = vpPath("parent", "plot"),
-                           name = "line", gp = gpar(col = "black", lwd = 2))
+                           name = "line", gp = gpar(col = "black", lwd = 1))
             image <- addGrob(image, l)
             speed <- if (i < 20) 30
                      else if (i < 60) 10
@@ -133,17 +132,18 @@ rawplot <-
         }
 
 
-         if (! get("stopAnimation", envir = e)) {
-        pauseImage(image, 5)
-        image <- removeGrob(image, "points")
-        pauseImage(image, 5)
-        image <- addGrob(image, final.smooth)
-         } else {
-             image <- removeGrob(image, "points")
-             image <- addGrob(image, final.line)
-             image <- addGrob(image, final.smooth)
-         }
-
+        if (! get("stopAnimation", envir = e)) {
+            pauseImage(image, 5)
+            image <- removeGrob(image, "points")
+            pauseImage(image, 5)            
+            image <- addGrob(image, final.smooth)
+        }
+        else {
+            image <- removeGrob(image, "points")
+            image <- addGrob(image, final.line)
+            image <- addGrob(image, final.smooth)
+        }
+        
     }
     drawImage(image)
 }
