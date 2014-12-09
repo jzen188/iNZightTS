@@ -105,13 +105,33 @@ function(width, height, ...) {
         width.in <- round(width * 90)
         height.in <- round(height * 90)
         Acinonyx::idev(width = width.in, height = height.in)
-    } else {
-        if (.Platform$OS.type != "windows" && Sys.info()["sysname"] != "Darwin")
+    }
+    else {
+        # i.e. if "Linux"
+        if (.Platform$OS.type != "windows" && Sys.info()["sysname"] != "Darwin") 
             # There are three variants of the cairo-based device:
+            #
             # type = "nbcairo" has no buffering. 
             # type = "cairo" has some buffering, and supports dev.hold and dev.flush. 
             # type = "dbcairo" buffers output and updates the screen about every 100ms (by default). 
-            dev.new(width = width, height = height, type = "cairo", ...)
+            # options(X11updates = .1)
+            #
+            # Could explore the option of using cross-platform "Cairo" device...
+            # Cairo(width = width, height = height, ...)
+            #
+            # We use a buffered device as otherwise repainting when the window is exposed
+            # will be slow. See ?X11()
+            X11(width = width, height = height, type = "cairo", ...)
+
+        # i.e. if "Mac OS X"
+        else if (.Platform$OS.type != "windows" && Sys.info()["sysname"] == "Darwin")
+            # With Mac OS X, the backing store is in use on the X server, so we use a
+            # the "non-buffered" "nbcairo" device. ?X11()
+            X11(width = width, height = height, type = "nbcairo", ...)
+        # i.e. if "Windows":
+        # The windows graphics device supports "double buffering" so we just need to call
+        # the default windows device.
+        
         else
             dev.new(width = width, height = height, ...)
     }
@@ -119,29 +139,33 @@ function(width, height, ...) {
 
 
 
+###  We force any plot to hold and flush itself
 drawImage <-
-function(image) {
+ function(image) {
   if ("Acinonyx" %in% rownames(installed.packages()))
-    plot.new()
-
+      plot.new()
   # Draws current image in device.
   grid.newpage()
   grid.draw(image)
-
-  # On some devices (notably on Mac) we end up being unable to
-  # see anything besides a single frame due to buffering.
-  # dev.flush() will force the device to show what it has
-  # currently buffered.
-  if (exists("dev.flush"))
-    dev.flush()
 }
 
 
+###  The dev.hold() and dev.flush() functions hold and flush frames.
+###  Moreover, they are part of the grDevices package, which is
+###  included in R by default. For non-windows graphics devices
+###  that may or may not come with "double buffering", holding
+###  and flushing an image for every iteration allows us to overcome
+###  the problem of "flickering". This has been tested on Linux Trusty.
 
 pauseImage <-
 function(image, pause = 1) {
-  for (i in 1:pause)
-    drawImage(image)
+  for (i in 1:pause) {
+      if (exists("dev.hold"))
+          dev.hold(1)
+      drawImage(image)
+      if (exists("dev.flush"))
+          dev.flush(1)
+  }
 }
 
 
@@ -155,4 +179,3 @@ function(image, grobs) {
   }
   image
 }
-              
