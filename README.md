@@ -15,4 +15,4 @@ Remarks (as at 10/12/2014)
    in 'utils.R'), provided by the cairoDevice package. Support for this package may discontinue in future versions of R -
    in which case, simply use X11(type = "cairo") instead.
    
-(N.B. If you are still experiencing issues, please email Chris Park <cpar137@aucklanduni.ac.nz>)
+(N.B. If you are still experiencing issues, please email Chris Park at <cpar137@aucklanduni.ac.nz>)
