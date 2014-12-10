@@ -5,7 +5,7 @@ The time series functionality designed for use within iNZight.
 For more info see: http://www.stat.auckland.ac.nz/~wild/iNZight/
 
 Remarks (as at 10/12/2014)
-============================
+---------------------------
 
 1. You may find that clicking the 'Time Series Plot - Animate' yields a plot that flickers slightly. In that case, you 
    can try changing the number inside dev.hold() and dev.flush() within the drawImage() function in 'utils.R' from 1 to 
