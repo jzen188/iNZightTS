@@ -12,7 +12,7 @@ Remarks (as at 10/12/2014)
    say 2 or 3, and see if that makes any difference.
    
 2. At present, the 'Time Series Plot - Animate' option calls a cross-platform Cairo() device (within the newdevice() function
-   in 'utils.R'), provided by the cairoDevice package. Support for this package may discontinue in the future versions of R -
+   in 'utils.R'), provided by the cairoDevice package. Support for this package may discontinue in future versions of R -
    in which case, simply use X11(type = "cairo") instead.
    
 (N.B. If you are still experiencing issues, please email Chris Park <cpar137@aucklanduni.ac.nz>)
