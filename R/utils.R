@@ -92,30 +92,29 @@ function(width, height, ...) {
 
     if ("package:shiny" %in% search()){
       # we should let shiny to set their default graphics device
-      # setting any width and height here force shiny popup a new window to you
-
+      # setting any width and height here force shiny popup a new window to you\
       return()
     }
     # The windows device works fine (for now), only attempt to speed up
     # any other devices that we're going to be using.
     # We speed them up by getting rid of bufferring.
     if ("Acinonyx" %in% rownames(installed.packages())) {
-        # Acinonyx uses pixels rather than inches, convert inches to
-        # pixels to determine dims. Assume 90 dpi.
+        ## Acinonyx uses pixels rather than inches, convert inches to
+        ## pixels to determine dims. Assume 90 dpi.
         width.in <- round(width * 90)
         height.in <- round(height * 90)
         Acinonyx::idev(width = width.in, height = height.in)
     } else {
-        # i.e. if NOT "Windows"
+        ## i.e. if NOT "Windows"...
         if (.Platform$OS.type != "windows") {
-            # There are three variants of the cairo-based device:
-            #
-            # type = "nbcairo" has no buffering.
-            # type = "cairo" has some buffering, and supports dev.hold and dev.flush.
-            # type = "dbcairo" buffers output and updates the screen about every 100ms (by default).
-            # options(X11updates = .1)
-            #
-            # Could explore the option of using cross-platform "Cairo" device...
+            ## There are three variants of the cairo-based device:
+            ##
+            ## type = "nbcairo" has no buffering.
+            ## type = "cairo" has some buffering, and supports dev.hold and dev.flush.
+            ## type = "dbcairo" buffers output and updates the screen about every 100ms (by default).
+            ## options(X11updates = .1)
+            ##
+            ## Could explore the option of using cross-platform "Cairo" device...
             if ("cairoDevice" %in% rownames(installed.packages())) {
                 cairoDevice::Cairo(width = width, height = height, ...)
             } else {
@@ -123,9 +122,9 @@ function(width, height, ...) {
                 X11(width = width, height = height, type = "cairo", ...)
             }
 
-            # We use a buffered device as otherwise repainting when the window is exposed
-            # will be slow. See ?X11()
-            # X11(width = width, height = height, type = "cairo", ...)
+            ## We use a buffered device as otherwise repainting when the window is exposed
+            ## will be slow. See ?X11()
+            ## X11(width = width, height = height, type = "cairo", ...)
 
         } else { 
             dev.new(width = width, height = height, ...)
@@ -140,9 +139,16 @@ drawImage <-
  function(image) {
   if ("Acinonyx" %in% rownames(installed.packages()))
       plot.new()
-  # Draws current image in device.
+  ## Draws current image in device.
   grid.newpage()
   grid.draw(image)
+  
+  ## On some devices (notably on Mac) we end up being unable to
+  ## see anything besides a single frame due to buffering.
+  ## dev.flush() will force the device to show what it has
+  ## currently buffered.
+  if (exists("dev.flush"))
+      dev.flush()   
 }
 
 
