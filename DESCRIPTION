@@ -14,6 +14,7 @@ Imports:
     grid
 Suggests:
     iNZight,
-    Acinonyx
+    Acinonyx,
+    cairoDevice
 Description: Time Series functionality for iNZight
 License: GPL-2

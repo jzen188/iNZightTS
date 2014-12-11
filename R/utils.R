@@ -117,7 +117,12 @@ function(width, height, ...) {
             # options(X11updates = .1)
             #
             # Could explore the option of using cross-platform "Cairo" device...
-            Cairo(width = width, height = height, ...)
+            if ("cairoDevice" %in% rownames(installed.packages())) {
+                Cairo(width = width, height = height, ...)
+            } else {
+                cat("\n--- We suggest you install the `cairoDevice` package ---\n")
+                dev.new(width = width, height = height, ...)
+            }
 
             # We use a buffered device as otherwise repainting when the window is exposed
             # will be slow. See ?X11()
