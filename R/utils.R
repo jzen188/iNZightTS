@@ -118,7 +118,8 @@ function(width, height, ...) {
             ##  options(X11updates = .1)
             ## 
             ##  We could explore the option of using cross-platform "Cairo" device...
-            if ("cairoDevice" %in% rownames(installed.packages())) {
+            ##  if ("cairoDevice" %in% rownames(installed.packages())) {
+            if ("package:cairoDevice" %in% search()) { # For consistency    
                 cairoDevice::Cairo(width = width, height = height, ...)
             } else {
                 warning("We suggest you install the `cairoDevice` package for better animations")
