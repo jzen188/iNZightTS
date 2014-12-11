@@ -105,10 +105,9 @@ function(width, height, ...) {
         width.in <- round(width * 90)
         height.in <- round(height * 90)
         Acinonyx::idev(width = width.in, height = height.in)
-    }
-    else {
+    } else {
         # i.e. if NOT "Windows"
-        if (.Platform$OS.type != "windows")
+        if (.Platform$OS.type != "windows") {
             # There are three variants of the cairo-based device:
             #
             # type = "nbcairo" has no buffering.
@@ -118,18 +117,19 @@ function(width, height, ...) {
             #
             # Could explore the option of using cross-platform "Cairo" device...
             if ("cairoDevice" %in% rownames(installed.packages())) {
-                Cairo(width = width, height = height, ...)
+                cairoDevice::Cairo(width = width, height = height, ...)
             } else {
-                cat("\n--- We suggest you install the `cairoDevice` package ---\n")
-                dev.new(width = width, height = height, ...)
+                warning("We suggest you install the `cairoDevice` package for better animations")
+                X11(width = width, height = height, type = "cairo", ...)
             }
 
             # We use a buffered device as otherwise repainting when the window is exposed
             # will be slow. See ?X11()
             # X11(width = width, height = height, type = "cairo", ...)
 
-        else
+        } else { 
             dev.new(width = width, height = height, ...)
+        }
     }
 }
 

@@ -19,7 +19,7 @@
 ##'
 ##' @keywords iNZight
 ##'
-##' @seealso \code{\link{iNZight}}
+##' @seealso \code{\link[iNZight]{iNZight}}
 ##'
 ##' @name iNZightTS-package
 NULL
