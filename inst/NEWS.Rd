@@ -2,6 +2,20 @@
 \title{Change Log for iNZightTS}
 \encoding{UTF-8}
 
+\section{Changes in version 1.1.4}{
+  Release date: 12 December 2014
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item On linux machines, we are now using the Cairo device for
+      better buffering in animated graphics for Time Series and VIT
+
+      \item Minor improvements for better animations in Linux and Macs
+      without Acinonyx
+    }
+  }
+}
+
 \section{Changes in version 1.1.3}{
   Release date: 17 September 2014
   
