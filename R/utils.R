@@ -167,8 +167,10 @@ drawImage <-
         ##  if "Acinonyx" is loaded, then use plot.new(.)
         ##  Unsure as to why this is necessary, but left as is
         ##  for now. 
-        if ("package:Acinonyx" %in% search())
+        if ("package:Acinonyx" %in% search()) {
+            print("boo")
             plot.new()
+        }
         ## Draws current image in device.
         grid.newpage()
         ## On some devices (notably on Mac) we end up being unable to
