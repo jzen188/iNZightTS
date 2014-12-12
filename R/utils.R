@@ -105,7 +105,7 @@ newdevice <-
             ##  If "Acinonyx" is installed, check if it can be successfully loaded.
             ##  If so, use the "idev" device provided by the package.
             tryAcinonyx <- suppressWarnings(try(library(Acinonyx), silent = TRUE))
-            if (!inherits(ac, "try-error")) {             
+            if (!inherits(tryAcinonyx, "try-error")) {             
                 ##  Acinonyx uses pixels rather than inches, convert inches to
                 ##  pixels to determine dims. Assume 90 dpi.        
                 width.in <- round(width * 90)
