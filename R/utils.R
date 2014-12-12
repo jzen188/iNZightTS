@@ -111,6 +111,7 @@ newdevice <-
                 width.in <- round(width * 90)
                 height.in <- round(height * 90)
                 Acinonyx::idev(width = width.in, height = height.in)
+                plot.new()
                 ##  If we cannot load "Acinonyx" successfully, issue a helpful warning
                 ##  message for users.
             } else {
