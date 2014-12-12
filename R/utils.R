@@ -177,11 +177,11 @@ drawImage <-
         ## see anything besides a single frame due to buffering.
         ## dev.hold() and dev.flush() will force the device to hold
         ## and flush currently buffered frames.
-        if (exists("dev.hold")) 
-            dev.hold(1)
+   #     if (exists("dev.hold")) 
+   #         dev.hold(1)
         grid.draw(image)
-        if (exists("dev.flush"))
-            dev.flush(1)   
+   #     if (exists("dev.flush"))
+   #         dev.flush(1)   
     }
 
 
@@ -195,11 +195,11 @@ drawImage <-
 pauseImage <-
     function(image, pause = 1) {
         for (i in 1:pause) {
-            if (exists("dev.hold"))
-                dev.hold(1)
+           # if (exists("dev.hold"))
+           #     dev.hold(1)
             drawImage(image)
-            if (exists("dev.flush"))
-                dev.flush(1)
+           # if (exists("dev.flush"))
+           #     dev.flush(1)
         }
     }
 
