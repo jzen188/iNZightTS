@@ -1,3 +1,8 @@
+### File : utils.R
+### Modified by : Chris Park <cpar137@aucklanduni.ac.nz>
+### Description : Modified the "newdevice" function.
+### Date modified : December 12, 2014.
+
 get.x <-
     function(tsObj) {
 ### figure out the limits and step size along the x axis
@@ -157,7 +162,10 @@ newdevice <-
 
 drawImage <-
     function(image) {
-        ## if ("Acinonyx" %in% rownames(installed.packages()))
+        ##  if ("Acinonyx" %in% rownames(installed.packages()))
+        ##  if "Acinonyx" is loaded, then use plot.new(.)
+        ##  Unsure as to why this is necessary, but left as is
+        ##  for now. 
         if ("package:Acinonyx" %in% search())
             plot.new()
         ## Draws current image in device.
