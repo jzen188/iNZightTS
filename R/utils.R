@@ -167,10 +167,9 @@ drawImage <-
         ##  if "Acinonyx" is loaded, then use plot.new(.)
         ##  Unsure as to why this is necessary, but left as is
         ##  for now. 
-        if ("package:Acinonyx" %in% search()) {
-            print("boo")
+        if ("package:Acinonyx" %in% search())
             plot.new()
-        }
+        
         ## Draws current image in device.
         grid.newpage()
         ## On some devices (notably on Mac) we end up being unable to
@@ -194,13 +193,14 @@ drawImage <-
 
 pauseImage <-
     function(image, pause = 1) {
-        for (i in 1:pause) {
+        #for (i in 1:pause) {
            # if (exists("dev.hold"))
            #     dev.hold(1)
             drawImage(image)
            # if (exists("dev.flush"))
            #     dev.flush(1)
-        }
+        #}
+            Sys.sleep(pause / 10)
     }
 
 
