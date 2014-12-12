@@ -89,7 +89,7 @@ function(vars.decomp, vpName, lineCol = "red",
 
 newdevice <-
 function(width, height, ...) {
-
+      ##  Check if "shiny" is currently loaded, instead of seeing if it is installed.
     if ("package:shiny" %in% search()){
       ##  We should let shiny to set their default graphics device
       ##  setting any width and height here force shiny popup a new window to you\
@@ -119,17 +119,23 @@ function(width, height, ...) {
             ## 
             ##  We could explore the option of using cross-platform "Cairo" device...
             ##  if ("cairoDevice" %in% rownames(installed.packages())) {
+            ##  Check if "cairoDevice" is loaded.
             if ("package:cairoDevice" %in% search()) { # For consistency    
                 cairoDevice::Cairo(width = width, height = height, ...)
             } else {
-                warning("We suggest you install the `cairoDevice` package for better animations")
-                X11(width = width, height = height, type = "cairo", ...)
+                ##  If "cairoDevice" is intalled, load it.
+                if (!("cairoDevice" %in% rownames(installed.packages()))) {
+                    warning("We suggest you install the `cairoDevice` package for better animations")
+                    ##  We use a buffered device as otherwise repainting when the window is exposed
+                    ##  will be slow. See ?X11()
+                    ##  X11(width = width, height = height, type = "cairo", ...)
+                    X11(width = width, height = height, type = "cairo", ...)
+                } else { 
+                   library(cairoDevice)
+                   cairoDevice::Cairo(width = width, height = height, ...)
+                }
             }
-
-            ##  We use a buffered device as otherwise repainting when the window is exposed
-            ##  will be slow. See ?X11()
-            ##  X11(width = width, height = height, type = "cairo", ...)
-
+        ##  If "windows", use the default windows device, which supports double buffering.
         } else { 
             dev.new(width = width, height = height, ...)
         }
@@ -140,19 +146,21 @@ function(width, height, ...) {
 
 ###  We force any plot to hold and flush itself
 drawImage <-
- function(image) {
-  if ("Acinonyx" %in% rownames(installed.packages()))
-      plot.new()
-  ## Draws current image in device.
-  grid.newpage()
-  grid.draw(image)
-  
-  ## On some devices (notably on Mac) we end up being unable to
-  ## see anything besides a single frame due to buffering.
-  ## dev.flush() will force the device to show what it has
-  ## currently buffered. 
-  if (exists("dev.flush"))
-      dev.flush(1)   
+    function(image) {
+    ## if ("Acinonyx" %in% rownames(installed.packages()))
+        if ("package:Acinonyx" %in% search())
+            plot.new()
+        ## Draws current image in device.
+        grid.newpage()
+        ## On some devices (notably on Mac) we end up being unable to
+        ## see anything besides a single frame due to buffering.
+        ## dev.hold() and dev.flush() will force the device to hold
+        ## and flush currently buffered frames.
+        if (exists("dev.hold")) 
+            dev.hold(1)
+        grid.draw(image)
+        if (exists("dev.flush"))
+            dev.flush(1)   
 }
 
 
