@@ -1,153 +1,163 @@
 get.x <-
-function(tsObj) {
-    ### figure out the limits and step size along the x axis
-    f = frequency(tsObj)
-    s = start(tsObj)
-    if (f == 1) {
-      start.x = s[1]
-      step.x = 1
-      end.x = start.x + length(tsObj) - 1
-    }
-    else {
-      step.x = 1/f
-      start.x = s[1] + (s[2] - 1) * step.x
-      end.x = start.x + step.x * (length(tsObj) - 1)
-    }
+    function(tsObj) {
+### figure out the limits and step size along the x axis
+        f = frequency(tsObj)
+        s = start(tsObj)
+        if (f == 1) {
+            start.x = s[1]
+            step.x = 1
+            end.x = start.x + length(tsObj) - 1
+        }
+        else {
+            step.x = 1/f
+            start.x = s[1] + (s[2] - 1) * step.x
+            end.x = start.x + step.x * (length(tsObj) - 1)
+        }
 
-    x = seq(start.x, end.x, by = step.x)
-    x.units = unit(x, "native")
-    list(x = x, x.units = x.units)
-}
+        x = seq(start.x, end.x, by = step.x)
+        x.units = unit(x, "native")
+        list(x = x, x.units = x.units)
+    }
 
 get.x2 <-
-  function(tsObj) {
-    ### figure out the limits and step size along the x axis
-    f = frequency(tsObj)
-    s = start(tsObj)
-    if (f == 1) {
-      start.x = s[1]
-      step.x = 1
-      end.x = start.x + length(tsObj) - 1
-    }
-    else {
-      step.x = 1/f
-      start.x = s[1] + (s[2] - 1) * step.x
-      end.x = start.x + step.x * (length(tsObj) - 1)
-    }
+    function(tsObj) {
+### figure out the limits and step size along the x axis
+        f = frequency(tsObj)
+        s = start(tsObj)
+        if (f == 1) {
+            start.x = s[1]
+            step.x = 1
+            end.x = start.x + length(tsObj) - 1
+        }
+        else {
+            step.x = 1/f
+            start.x = s[1] + (s[2] - 1) * step.x
+            end.x = start.x + step.x * (length(tsObj) - 1)
+        }
 
-    x = seq(start.x, end.x, by = step.x)
-    x = order(x)
-    x = x/max(x)
-    x.units = unit(x, "native")
-    list(x = x, x.units = x.units)
-  }
+        x = seq(start.x, end.x, by = step.x)
+        x = order(x)
+        x = x/max(x)
+        x.units = unit(x, "native")
+        list(x = x, x.units = x.units)
+    }
 
 get.line.coords <-
-function(vars.decomp, vpName, lineGrobName) {
-    decomp = vars.decomp$decompVars
-    seekViewport(vpName)
-    line = getGrob(decomp$tree, lineGrobName)
-    line.y = convertUnit(line$y, attr(line$y[1], "unit"), valueOnly = TRUE)
-    line.vp.yrange = current.viewport()$yscale
-    line.y.npc = (line.y - line.vp.yrange[1]) / diff(line.vp.yrange)
-    line.y.parent = switch(vpName,
-                           season = decomp$props["remainder"] +
-                                      line.y.npc * decomp$props["seasonal"],
-                           random = line.y.npc * decomp$props["remainder"],
-                            trend = line.y.npc * decomp$props["trend"] +
-                                      decomp$props["seasonal"] +
-                                      decomp$props["remainder"])
-    line.x = convertUnit(line$x, "native", valueOnly = TRUE)
-    line.vp.xrange = current.viewport()$xscale
-    line.x.npc = (line.x - line.vp.xrange[1]) / diff(line.vp.xrange)
-    x.parent = line.x.npc
+    function(vars.decomp, vpName, lineGrobName) {
+        decomp = vars.decomp$decompVars
+        seekViewport(vpName)
+        line = getGrob(decomp$tree, lineGrobName)
+        line.y = convertUnit(line$y, attr(line$y[1], "unit"), valueOnly = TRUE)
+        line.vp.yrange = current.viewport()$yscale
+        line.y.npc = (line.y - line.vp.yrange[1]) / diff(line.vp.yrange)
+        line.y.parent = switch(vpName,
+            season = decomp$props["remainder"] +
+            line.y.npc * decomp$props["seasonal"],
+            random = line.y.npc * decomp$props["remainder"],
+            trend = line.y.npc * decomp$props["trend"] +
+            decomp$props["seasonal"] +
+            decomp$props["remainder"])
+        line.x = convertUnit(line$x, "native", valueOnly = TRUE)
+        line.vp.xrange = current.viewport()$xscale
+        line.x.npc = (line.x - line.vp.xrange[1]) / diff(line.vp.xrange)
+        x.parent = line.x.npc
 
-    list(line.y = line.y, line.vp.yrange = line.vp.yrange,
-         line.y.npc = line.y.npc, line.y.parent = line.y.parent,
-         line.x = line.x, line.vp.xrange = line.vp.xrange,
-         line.x.npc = line.x.npc, x.parent = x.parent,
-         line.col = line$gp$col)
-}
+        list(line.y = line.y, line.vp.yrange = line.vp.yrange,
+             line.y.npc = line.y.npc, line.y.parent = line.y.parent,
+             line.x = line.x, line.vp.xrange = line.vp.xrange,
+             line.x.npc = line.x.npc, x.parent = x.parent,
+             line.col = line$gp$col)
+    }
 
 
 
 add.line.plots.vp <-
-function(vars.decomp, vpName, lineCol = "red",
-                             name = paste(vpName, "copy", sep = ".")) {
-    z = get.line.coords(vars.decomp, vpName, paste(vpName, "Line", sep = ""))
-    lineCopy = linesGrob(unit(z$x.parent, "npc"),
-                         unit(z$line.y.parent, "npc"),
-                         name = name,
-                         vp = vpPath("parent", "plots"),
-                         gp = gpar(col = lineCol))
-    updated.tree = addGrob(vars.decomp$decompVars$tree, lineCopy)
-    vars.decomp$decompVars$tree = updated.tree
-    vars.decomp
-}
+    function(vars.decomp, vpName, lineCol = "red",
+             name = paste(vpName, "copy", sep = ".")) {
+        z = get.line.coords(vars.decomp, vpName, paste(vpName, "Line", sep = ""))
+        lineCopy = linesGrob(unit(z$x.parent, "npc"),
+            unit(z$line.y.parent, "npc"),
+            name = name,
+            vp = vpPath("parent", "plots"),
+            gp = gpar(col = lineCol))
+        updated.tree = addGrob(vars.decomp$decompVars$tree, lineCopy)
+        vars.decomp$decompVars$tree = updated.tree
+        vars.decomp
+    }
 
 
 
 newdevice <-
-function(width, height, ...) {
-      ##  Check if "shiny" is currently loaded, instead of seeing if it is installed.
-    if ("package:shiny" %in% search()){
-      ##  We should let shiny to set their default graphics device
-      ##  setting any width and height here force shiny popup a new window to you\
-      return()
-    }
-    ##  The windows device works fine (for now), only attempt to speed up
-    ##  any other devices that we're going to be using.
-    ##  We speed them up by getting rid of bufferring.
-    ##  We want to change the if() condition to something like:
-    ##  if ("package:Acinonyx" %in% search() && try(...) "returns an error") {
-    ##
-    if ("Acinonyx" %in% rownames(installed.packages())) {
-        ##  Acinonyx uses pixels rather than inches, convert inches to
-        ##  pixels to determine dims. Assume 90 dpi.
-        width.in <- round(width * 90)
-        height.in <- round(height * 90)
-        Acinonyx::idev(width = width.in, height = height.in)
-    } else {
-        ##  i.e. if NOT "Windows"...
-        if (.Platform$OS.type != "windows") {
-            ##  There are three variants of the cairo-based device:
-            ##
-            ##  type = "nbcairo" has no buffering.
-            ##  type = "cairo" has some buffering, and supports dev.hold and dev.flush.
-            ##  type = "dbcairo" buffers output and updates the screen about every 100ms (by default).
-            ##  options(X11updates = .1)
-            ## 
-            ##  We could explore the option of using cross-platform "Cairo" device...
-            ##  if ("cairoDevice" %in% rownames(installed.packages())) {
-            ##  Check if "cairoDevice" is loaded.
-            if ("package:cairoDevice" %in% search()) { # For consistency    
-                cairoDevice::Cairo(width = width, height = height, ...)
+    function(width, height, ...) {
+        ##  Check if "shiny" is currently loaded.
+        if ("package:shiny" %in% search())
+            ##  Let shiny set default graphics device, i.e. height and width.
+            return()    
+        ##  Check if "Acinonyx" is installed. This is a logical vector that returns
+        ##  TRUE if installed and FALSE otherwise.
+        checkAcinonyx <- "Acinonyx" %in% rownames(installed.packages())        
+        if (checkAcinonyx) {
+            ##  If "Acinonyx" is installed, check if it can be successfully loaded.
+            ##  If so, use the "idev" device provided by the package.
+            tryAcinonyx <- suppressWarnings(try(library(Acinonyx), silent = TRUE))
+            if (!inherits(ac, "try-error")) {             
+                ##  Acinonyx uses pixels rather than inches, convert inches to
+                ##  pixels to determine dims. Assume 90 dpi.        
+                width.in <- round(width * 90)
+                height.in <- round(height * 90)
+                Acinonyx::idev(width = width.in, height = height.in)
+                ##  If we cannot load "Acinonyx" successfully, issue a helpful warning
+                ##  message for users.
             } else {
-                ##  If "cairoDevice" is intalled, load it.
-                if (!("cairoDevice" %in% rownames(installed.packages()))) {
-                    warning("We suggest you install the `cairoDevice` package for better animations")
-                    ##  We use a buffered device as otherwise repainting when the window is exposed
-                    ##  will be slow. See ?X11()
-                    ##  X11(width = width, height = height, type = "cairo", ...)
-                    X11(width = width, height = height, type = "cairo", ...)
-                } else { 
-                   library(cairoDevice)
-                   cairoDevice::Cairo(width = width, height = height, ...)
-                }
+                gmessage(paste("Unfortunately, the package used for animation",
+                               "in iNZightVIT is incompatible with your system.",
+                               "While you can still use VIT, you may experience",
+                               "some animation issues. We suggest you download",
+                               "our iNZightVIT module for older Mac OS: \n\n", ,
+                               "https://www.stat.auckland.ac.nz/~wild/iNZight/mac.html"),
+                         title = "VIT Animation Compatiblity Issue")            
             }
-        ##  If "windows", use the default windows device, which supports double buffering.
-        } else { 
-            dev.new(width = width, height = height, ...)
+            ##  If Acinonyx is NOT installed, we handle the windows and non-windows
+            ##  Operating Systems separately.
+        } else {
+            ##  If OS is non-windows...
+            if (.Platform$OS.type != "windows") {
+                ##  Note that there exist three variants of the cairo-based device.
+                ##  See ?X11() for more details.
+                ## 
+                ##  If the "cairoDevice" package is loaded, we use the Cairo() graphics
+                ##  device as it supports anti-aliasing and produces visually pleasing
+                ##  plots across all platforms.
+                if ("package:cairoDevice" %in% search()) { # For consistency    
+                    cairoDevice::Cairo(width = width, height = height, ...)
+                } else {
+                    ##  If "cairoDevice" is NOT intalled, issue a helpful warning message.
+                    if (!("cairoDevice" %in% rownames(installed.packages()))) {
+                        warning("We suggest you install the `cairoDevice`
+                                package for better animations")
+                        ##  We use a buffered device as otherwise repainting when the
+                        ##  window is exposed will be slow.
+                        X11(width = width, height = height, type = "cairo", ...)
+                        ##  If the "cairoDevice" package is installed but not loaded,
+                        ##  load the package and use the cross-platform "Cairo" device.
+                    } else { 
+                        library(cairoDevice)
+                        cairoDevice::Cairo(width = width, height = height, ...)
+                    }
+                }
+                ##  If OS is "windows", then we use the default windows device, which
+                ##  supports double buffering by default.
+            } else { 
+                dev.new(width = width, height = height, ...)
+            }
         }
     }
-}
 
 
 
-###  We force any plot to hold and flush itself
 drawImage <-
     function(image) {
-    ## if ("Acinonyx" %in% rownames(installed.packages()))
+        ## if ("Acinonyx" %in% rownames(installed.packages()))
         if ("package:Acinonyx" %in% search())
             plot.new()
         ## Draws current image in device.
@@ -161,7 +171,7 @@ drawImage <-
         grid.draw(image)
         if (exists("dev.flush"))
             dev.flush(1)   
-}
+    }
 
 
 ###  The dev.hold() and dev.flush() functions hold and flush frames.
@@ -172,25 +182,25 @@ drawImage <-
 ###  the problem of "flickering".
 
 pauseImage <-
-function(image, pause = 1) {
-  for (i in 1:pause) {
-      if (exists("dev.hold"))
-          dev.hold(1)
-      drawImage(image)
-      if (exists("dev.flush"))
-          dev.flush(1)
-  }
-}
+    function(image, pause = 1) {
+        for (i in 1:pause) {
+            if (exists("dev.hold"))
+                dev.hold(1)
+            drawImage(image)
+            if (exists("dev.flush"))
+                dev.flush(1)
+        }
+    }
 
 
 
 rmGrobs <-
-function(image, grobs) {
-  for (i in grobs) {
-    if (i %in% childNames(image)) {
-      image <- removeGrob(image, gPath(i))
+    function(image, grobs) {
+        for (i in grobs) {
+            if (i %in% childNames(image)) {
+                image <- removeGrob(image, gPath(i))
+            }
+        }
+        image
     }
-  }
-  image
-}
 
